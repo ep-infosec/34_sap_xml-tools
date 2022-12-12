@@ -1,0 +1,87 @@
+{
+  "name": "root",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "xml-toolkit/@xml-tools/language-server",
+      "xml-toolkit/@xml-tools/language-server/**"
+    ]
+  },
+  "scripts": {
+    "release:version": "lerna version && yarn run release:trigger",
+    "release:trigger": "node ./scripts/trigger-release",
+    "release:publish": "lerna publish from-git --yes",
+    "ci": "npm-run-all format:validate lint:validate ci:subpackages coverage:merge legal:*",
+    "format:fix": "prettier --write --ignore-path .gitignore \"**/*.@(ts|js|json|md)\"",
+    "format:validate": "prettier --check --ignore-path .gitignore \"**/*.@(ts|js|json|md)\"",
+    "lint:fix": "eslint . --ext=js --fix --max-warnings=0 --ignore-path=.gitignore",
+    "lint:validate": "eslint . --ext=js --max-warnings=0 --ignore-path=.gitignore",
+    "ci:subpackages": "lerna run ci",
+    "test": "lerna run test",
+    "coverage": "lerna run coverage",
+    "coverage:merge": "node ./scripts/merge-coverage",
+    "clean": "lerna run clean",
+    "legal:delete": "lerna exec \"shx rm -rf .reuse LICENSES\" || true",
+    "legal:copy": "lerna exec \"shx cp -r ../../.reuse .reuse && shx cp -r ../../LICENSES LICENSES\""
+  },
+  "devDependencies": {
+    "@types/chai": "4.2.14",
+    "@types/mocha": "8.2.0",
+    "@types/node": "14.14.19",
+    "eslint": "7.27.0",
+    "eslint-config-prettier": "7.2.0",
+    "eslint-plugin-eslint-comments": "3.2.0",
+    "coveralls": "3.1.0",
+    "make-dir": "3.1.0",
+    "glob": "7.1.6",
+    "chai": "4.3.4",
+    "husky": "4.3.8",
+    "lerna": "4.0.0",
+    "lint-staged": "11.0.0",
+    "mocha": "7.2.0",
+    "npm-run-all": "4.1.5",
+    "nyc": "15.1.0",
+    "prettier": "2.2.1",
+    "typescript": "4.1.3",
+    "cz-conventional-changelog": "3.3.0",
+    "@commitlint/cli": "11.0.0",
+    "@commitlint/config-conventional": "11.0.0",
+    "rimraf": "3.0.2",
+    "simple-git": "2.31.0",
+    "fs-extra": "9.1.0",
+    "webpack": "5.38.1",
+    "webpack-cli": "4.3.1",
+    "shx": "0.3.3"
+  },
+  "prettier": {
+    "plugins": [],
+    "pluginSearchDirs": []
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,js,md,json}": [
+      "prettier --write"
+    ],
+    "*.{js}": [
+      "eslint --fix --max-warnings=0 --ignore-pattern=!.*"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  }
+}
